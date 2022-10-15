@@ -1,0 +1,22 @@
+{
+  "name": "jeffreyvanrossum/wp-plugin-updater",
+  "description": "Provides a way to check for plugin updates on a alternative host then wordpress.org.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jeffrey van Rossum",
+      "email": "jeffrey@vanrossum.dev"
+    }
+  ],
+  "require": {
+    "php": "^8.0"
+  },
+  "require-dev": {
+    "phpcompatibility/php-compatibility": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jeffreyvr\\WPPluginUpdater\\": "src"
+    }
+  }
+}
