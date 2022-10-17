@@ -77,7 +77,7 @@ class WPPluginUpdater
 
     public function checkUpdate()
     {
-        if (! $this->actions['check-update'] instanceof Action) {
+        if (! class_exists($this->actions['check-update'])) {
             return false;
         }
 
@@ -86,7 +86,7 @@ class WPPluginUpdater
 
     public function activateLicense()
     {
-        if (! $this->actions['activate-license'] instanceof Action) {
+        if (! class_exists($this->actions['activate-license'])) {
             return false;
         }
 
@@ -95,7 +95,7 @@ class WPPluginUpdater
 
     public function checkLicense()
     {
-        if (! $this->actions['check-license'] instanceof Action) {
+        if (! class_exists($this->actions['check-license'])) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class WPPluginUpdater
 
     public function deactivateLicense()
     {
-        if (! $this->actions['deactivate-license'] instanceof Action) {
+        if (! class_exists($this->actions['deactivate-license'])) {
             return false;
         }
 
