@@ -12,11 +12,17 @@
     "php": "^8.0"
   },
   "require-dev": {
-    "phpcompatibility/php-compatibility": "*"
+    "phpcompatibility/php-compatibility": "*",
+    "laravel/pint": "^1.2"
   },
   "autoload": {
     "psr-4": {
       "Jeffreyvr\\WPPluginUpdater\\": "src"
     }
+  },
+  "scripts": {
+    "pint": [
+      "./vendor/bin/pint"
+    ]
   }
 }

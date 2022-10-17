@@ -6,7 +6,11 @@ use Closure;
 
 class WPPluginUpdater
 {
-    public string|Closure $licenseKey;
+    public array|Closure $checkLicenseRequestBody;
+
+    public array|Closure $checkUpdateRequestBody;
+
+    public bool|Closure $canCheck = false;
 
     public function __construct(
         public string $pluginFile,
@@ -16,25 +20,38 @@ class WPPluginUpdater
         public string $checkUpdateUrl,
         public string $checkLicenseUrl
     ) {
-
     }
 
-    public function setLicenseKey($licenseKey): self
+    public function canCheck(): bool
     {
-        $this->licenseKey = $licenseKey;
-
-        return $this;
-    }
-
-    public function getLicenseKey()
-    {
-        if(is_callable($this->licenseKey)) {
-            $callback = $this->licenseKey;
+        if (is_callable($this->canCheck)) {
+            $callback = $this->canCheck;
 
             return $callback();
         }
 
-        return $this->licenseKey;
+        return $this->canCheck;
+    }
+
+    public function setCanCheck($can): self
+    {
+        $this->canCheck = $can;
+
+        return $this;
+    }
+
+    public function setCheckLicenseRequestBody($body): self
+    {
+        $this->checkLicenseRequestBody = $body;
+
+        return $this;
+    }
+
+    public function setCheckUpdateRequestBody($body): self
+    {
+        $this->checkUpdateRequestBody = $body;
+
+        return $this;
     }
 
     public function getPluginFile(): string
@@ -57,18 +74,13 @@ class WPPluginUpdater
         return $this->version;
     }
 
-    public function getFrom(): string
+    public function checkUpdate()
     {
-        return parse_url( get_site_url(), PHP_URL_HOST );
-    }
+        $body = $this->checkUpdateRequestBody;
 
-    function checkUpdate()
-    {
         $response = wp_remote_get($this->checkUpdateUrl, [
-            'body' => [
-                'license_key' => $this->getLicenseKey()
-            ],
-            'timeout' => 10
+            'body' => is_callable($body) ? $body() : $body,
+            'timeout' => 10,
         ]);
 
         return $response;
@@ -76,12 +88,11 @@ class WPPluginUpdater
 
     public function checkLicense()
     {
+        $body = $this->checkLicenseRequestBody;
+
         $response = wp_remote_post($this->checkLicenseUrl, [
-            'body' => [
-                'license_key' => $this->getLicenseKey(),
-                'from' => $this->getFrom()
-            ],
-            'timeout' => 10
+            'body' => is_callable($body) ? $body() : $body,
+            'timeout' => 10,
         ]);
 
         return $response;

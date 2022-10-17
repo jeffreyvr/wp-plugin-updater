@@ -14,22 +14,20 @@ class Updater
     public function __construct(
         public WPPluginUpdater $pluginUpdater
     ) {
-        $this->cacheKey = str_replace('-', '_', $this->pluginUpdater->getPluginSlug()) . '_updater';
+        $this->cacheKey = str_replace('-', '_', $this->pluginUpdater->getPluginSlug()).'_updater';
 
         $this->cacheEnabled = true;
 
         // add_filter('https_ssl_verify', '__return_false');
 
-        add_filter('plugins_api', array($this, 'info'), 20, 3);
-        add_filter('site_transient_update_plugins', array($this, 'update'));
-        add_action('upgrader_process_complete', array($this, 'purge'), 10, 2);
+        add_filter('plugins_api', [$this, 'info'], 20, 3);
+        add_filter('site_transient_update_plugins', [$this, 'update']);
+        add_action('upgrader_process_complete', [$this, 'purge'], 10, 2);
     }
 
     public function request()
     {
-        $licenseKey = $this->pluginUpdater->getLicenseKey();
-
-        if ( ! $licenseKey) {
+        if (! $this->pluginUpdater->canCheck()) {
             return false;
         }
 
@@ -79,7 +77,7 @@ class Updater
 
         $remote = $this->request();
 
-        if ( ! $remote || ! $remote->success || empty($remote->update)) {
+        if (! $remote || ! $remote->success || empty($remote->update)) {
             return false;
         }
 
@@ -91,7 +89,7 @@ class Updater
 
         $result->slug = $this->pluginUpdater->getPluginSlug();
 
-        $result->sections = (array)$result->sections;
+        $result->sections = (array) $result->sections;
 
         return $result;
     }
@@ -107,20 +105,20 @@ class Updater
             return $transient;
         }
 
-        $res = (object)array(
-            'id'            => $this->pluginUpdater->getPluginId(),
-            'slug'          => $this->pluginUpdater->getPluginSlug(),
-            'plugin'        => $this->pluginUpdater->getPluginId(),
-            'new_version'   => $this->pluginUpdater->getVersion(),
-            'url'           => '',
-            'package'       => '',
-            'icons'         => array(),
-            'banners'       => array(),
-            'banners_rtl'   => array(),
-            'tested'        => '',
-            'requires_php'  => '',
+        $res = (object) [
+            'id' => $this->pluginUpdater->getPluginId(),
+            'slug' => $this->pluginUpdater->getPluginSlug(),
+            'plugin' => $this->pluginUpdater->getPluginId(),
+            'new_version' => $this->pluginUpdater->getVersion(),
+            'url' => '',
+            'package' => '',
+            'icons' => [],
+            'banners' => [],
+            'banners_rtl' => [],
+            'tested' => '',
+            'requires_php' => '',
             'compatibility' => new stdClass(),
-        );
+        ];
 
         $remote = $this->request();
 
@@ -129,7 +127,7 @@ class Updater
             && version_compare($this->pluginUpdater->getVersion(), $remote->update->version, '<')
         ) {
             $res->new_version = $remote->update->version;
-            $res->package     = $remote->update->download_link;
+            $res->package = $remote->update->download_link;
 
             $transient->response[$res->plugin] = $res;
         } else {
