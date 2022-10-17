@@ -6,20 +6,35 @@ use Closure;
 
 class WPPluginUpdater
 {
-    public array|Closure $checkLicenseRequestBody;
-
-    public array|Closure $checkUpdateRequestBody;
-
     public bool|Closure $canCheck = false;
+
+    public array $actions = [
+        'activate-license' => null,
+        'deactivate-license' => null,
+        'check-license' => null,
+        'check-update' => null,
+    ];
 
     public function __construct(
         public string $pluginFile,
         public string $pluginId,
         public string $pluginSlug,
         public string $version,
-        public string $checkUpdateUrl,
-        public string $checkLicenseUrl
     ) {
+    }
+
+    public function setAction($name, $action)
+    {
+        $this->actions[$name] = $action;
+
+        return $this;
+    }
+
+    public function setActions($actions)
+    {
+        $this->actions = $actions;
+
+        return $this;
     }
 
     public function canCheck(): bool
@@ -36,20 +51,6 @@ class WPPluginUpdater
     public function setCanCheck($can): self
     {
         $this->canCheck = $can;
-
-        return $this;
-    }
-
-    public function setCheckLicenseRequestBody($body): self
-    {
-        $this->checkLicenseRequestBody = $body;
-
-        return $this;
-    }
-
-    public function setCheckUpdateRequestBody($body): self
-    {
-        $this->checkUpdateRequestBody = $body;
 
         return $this;
     }
@@ -76,25 +77,37 @@ class WPPluginUpdater
 
     public function checkUpdate()
     {
-        $body = $this->checkUpdateRequestBody;
+        if (! $this->actions['check-update'] instanceof Action) {
+            return false;
+        }
 
-        $response = wp_remote_get($this->checkUpdateUrl, [
-            'body' => is_callable($body) ? $body() : $body,
-            'timeout' => 10,
-        ]);
+        return (new $this->actions['check-update'])->execute();
+    }
 
-        return $response;
+    public function activateLicense()
+    {
+        if (! $this->actions['activate-license'] instanceof Action) {
+            return false;
+        }
+
+        return $this->actions['activate-license']->execute();
     }
 
     public function checkLicense()
     {
-        $body = $this->checkLicenseRequestBody;
+        if (! $this->actions['check-license'] instanceof Action) {
+            return false;
+        }
 
-        $response = wp_remote_post($this->checkLicenseUrl, [
-            'body' => is_callable($body) ? $body() : $body,
-            'timeout' => 10,
-        ]);
+        return (new $this->actions['check-license'])->execute();
+    }
 
-        return $response;
+    public function deactivateLicense()
+    {
+        if (! $this->actions['deactivate-license'] instanceof Action) {
+            return false;
+        }
+
+        return (new $this->actions['deactivate-license'])->execute();
     }
 }

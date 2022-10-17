@@ -24,12 +24,13 @@ Based on the [example plugin](https://github.com/Make-Lemonade/lemonsqueezy-wp-u
 ))->setCanCheck(function() {
     // determine if check can be made
 })
-->setCheckLicenseRequestBody(function() {
-    // return the body (array) for the check license request
-})
-->setCheckUpdateRequestBody(function(){
-    // return the body (array) for the plugin update request 
-});
+->setActions([
+    // classes should implement Jeffreyvr\WPPluginUpdater\Action interface 
+    'activate-license' => ActivateLicenseAction::class,
+    'deactivate-license' => DeactivateLicenseAction::class,
+    'check-license' => CheckLicenseAction::class,
+    'check-update' => CheckUpdateAction::class
+]);
 
 new \Jeffreyvr\WPPluginUpdater\Updater($this->updater);
 ```

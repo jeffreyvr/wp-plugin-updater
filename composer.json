@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "pint": [
+    "format": [
       "./vendor/bin/pint"
     ]
   }
