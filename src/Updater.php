@@ -68,17 +68,17 @@ class Updater
     public function info(bool|object|array $result, string $action, object $args): object|bool
     {
         if ('plugin_information' !== $action) {
-            return false;
+            return $result;
         }
 
-        if ($this->pluginUpdater->getPluginSlug() !== $args->slug) {
-            return false;
+        if ($this->pluginUpdater->getPluginSlug() !== ($args->slug ?? '')) {
+            return $result;
         }
 
         $remote = $this->request();
 
         if (! $remote || ! $remote->success || empty($remote->update)) {
-            return false;
+            return $result;
         }
 
         $plugin_data = get_plugin_data($this->pluginUpdater->getPluginFile());
