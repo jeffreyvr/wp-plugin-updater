@@ -13,16 +13,30 @@
   },
   "require-dev": {
     "phpcompatibility/php-compatibility": "*",
-    "laravel/pint": "^1.2"
+    "laravel/pint": "^1.2",
+    "pestphp/pest": "^4.7"
   },
   "autoload": {
     "psr-4": {
       "Jeffreyvr\\WPPluginUpdater\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests"
+    }
+  },
   "scripts": {
     "format": [
       "./vendor/bin/pint"
+    ],
+    "test": [
+      "./vendor/bin/pest"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

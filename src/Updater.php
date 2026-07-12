@@ -18,8 +18,6 @@ class Updater
 
         $this->cacheEnabled = true;
 
-        // add_filter('https_ssl_verify', '__return_false');
-
         add_filter('plugins_api', [$this, 'info'], 20, 3);
         add_filter('site_transient_update_plugins', [$this, 'update']);
         add_action('upgrader_process_complete', [$this, 'purge'], 10, 2);
@@ -101,7 +99,7 @@ class Updater
      */
     public function update(object|bool $transient): object|bool
     {
-        if (empty($transient->checked)) {
+        if (! is_object($transient) || empty($transient->checked)) {
             return $transient;
         }
 

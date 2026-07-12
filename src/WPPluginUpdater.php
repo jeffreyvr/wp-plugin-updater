@@ -77,37 +77,32 @@ class WPPluginUpdater
 
     public function checkUpdate()
     {
-        if (! class_exists($this->actions['check-update'])) {
-            return false;
-        }
-
-        return (new $this->actions['check-update'])->execute();
+        return $this->executeAction('check-update');
     }
 
     public function activateLicense()
     {
-        if (! class_exists($this->actions['activate-license'])) {
-            return false;
-        }
-
-        return $this->actions['activate-license']->execute();
+        return $this->executeAction('activate-license');
     }
 
     public function checkLicense()
     {
-        if (! class_exists($this->actions['check-license'])) {
-            return false;
-        }
-
-        return (new $this->actions['check-license'])->execute();
+        return $this->executeAction('check-license');
     }
 
     public function deactivateLicense()
     {
-        if (! class_exists($this->actions['deactivate-license'])) {
+        return $this->executeAction('deactivate-license');
+    }
+
+    protected function executeAction(string $name)
+    {
+        $action = $this->actions[$name] ?? null;
+
+        if (! is_string($action) || ! class_exists($action)) {
             return false;
         }
 
-        return (new $this->actions['deactivate-license'])->execute();
+        return (new $action)->execute();
     }
 }
