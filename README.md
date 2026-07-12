@@ -10,8 +10,6 @@
 
 Allows you to check for updates for a plugin on a different server then wordpress.org.
 
-> 🚸 As long as this package is still in development, the API might be subject to change and should not considered stable. Use at your own risk.
-
 Made for a specific use case which may not fit everybody's needs.
 
 Based on the [example plugin](https://github.com/Make-Lemonade/lemonsqueezy-wp-updater-example) from LemonSqueezy.
